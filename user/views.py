@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from requests import Response
 from rest_framework.parsers import JSONParser
 from django.http import Http404, JsonResponse
 from .forms import ProductForm, UploadImageForm
 from rest_framework import status
 from django.contrib.auth.decorators import login_required
-
+import chardet
 
 import json
 from user.models import Product, User, Seller
@@ -161,40 +162,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
 
 
-# @csrf_exempt
-# def add_product(request):
-#     # data = json.loads(request.body)
-#     print("\n\n")
-#     # print(data)
-#     if request.method == 'POST':
-#         # process the image upload separately
-#         image = request.FILES.get('image')
-#         if image:
-#             fs = FileSystemStorage()
-#             filename = fs.save(image.name, image)
-#             uploaded_file_url = fs.url(filename)
-#         else:
-#             uploaded_file_url = None
-
-#         # process the form data
-#         form = ProductForm(request.POST)
-#         print(form.is_valid)
-#         if form.is_valid():
-#             product = form.save(commit=False)
-#             product.image = uploaded_file_url
-#             product = Product(
-#                 name=form.cleaned_data['name'],
-#                 description=form.cleaned_data['description'],
-#                 category=form.cleaned_data['category'],
-#                 price=form.cleaned_data['price'],
-#                 image=uploaded_file_url,
-#             )
-#             product.save()
-#             return JsonResponse({'success': True})
-#         else:
-#             return JsonResponse({'success': False, 'message': 'Invalid form data.'})
-#     else:
-#         return JsonResponse({'success': False, 'message': 'This endpoint only accepts POST requests.'})
 
 @csrf_exempt
 def add_product(request, id):
@@ -226,12 +193,6 @@ def add_product(request, id):
     else:
         return JsonResponse({'success': False, 'message': 'This endpoint only accepts POST requests.'})
 
-    # serializer_class = ProductSerializer
-    # permission_classes = [IsAuthenticated]
-
-    # def get_queryset(self):
-    #     seller_id = self.request.query_params.get('seller_id')
-    #     return Product.objects.filter(seller_id=seller_id)
 
 # @login_required
 @csrf_exempt
@@ -256,23 +217,6 @@ def product_list(request, id):
         return JsonResponse({'error': 'Only GET requests are allowed'})
     
 
-# def delete_product(request, id):
-#     print('\n\n', id)
-#         try:
-#             product = Product.objects.get(pk=id)
-#             product.delete()
-#             return JsonResponse({'message': 'Product was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
-#         except Product.DoesNotExist:
-#             return JsonResponse({'message': 'The product does not exist'}, status=status.HTTP_404_NOT_FOUND)
-        
-# def delete_product( request, pk):
-#     if request.method == 'DELETE':
-#         try:
-#             product = Product.objects.get(pk=pk)
-#             product.delete()
-#             return JsonResponse({'message': 'Product was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
-#         except Product.DoesNotExist:
-#             return JsonResponse({'message': 'The product does not exist'}, status=status.HTTP_404_NOT_FOUND)@csrf_exempt
 @csrf_exempt
 def delete_product(request, id):
     try:
@@ -306,18 +250,57 @@ def get_product(request, id):
 
 @csrf_exempt
 def update_product(request, id):
+    print(request.body)
     try:
         product = Product.objects.get(pk = id)
+
     except Product.DoesNotExist:
         raise Http404("Product does not exist")
 
     if request.method == 'PUT':
         data = json.loads(request.body)
+        # Detect encoding of request.body bytes
+        # try:
+        #     data = json.loads(request.body.decode('utf-8', 'replace'))  # Decode request body with 'replace' error handler
+        # except json.JSONDecodeError as e:
+        #     return JsonResponse({'error': 'Invalid JSON data'})
+
+        # serializer = ProductSerializer(product, data=request.data)
+
+        # input_encoding = chardet.detect(request.body)['encoding']
+        # Decode request.body bytes using detected encoding
+        # data = json.loads(request.body.decode(input_encoding))
+        # print("in here", data)
         product.ProductName = data.get('ProductName', product.ProductName)
         product.Description = data.get('Description', product.Description)
         product.Category = data.get('Category', product.Category)
         product.Price = data.get('Price', product.Price)
+
+        # if 'image' in request.FILES:
+        #     print("\n\n\n\n\n\n")
+        #     serializer.is_valid(raise_exception=True)
+        #     serializer.save(image=request.FILES['image'])
+        # else:
+        #     serializer.is_valid(raise_exception=True)
+        #     serializer.save()
+
+        # if 'image' in request.FILES:
+        #     print("in here")
+        #     image = request.FILES['image']
+        #     fs = FileSystemStorage()
+        #     filename = fs.save(image.name, image)
+        #     uploaded_file_url = fs.url(filename)
+        #     product.image = uploaded_file_url
+
+        # if 'image' in data:
+        #     image = data['image']
+        #     fs = FileSystemStorage()
+        # filename = fs.save(image.name, image)
+        # uploaded_file_url = fs.url(filename)
+        # product.image = uploaded_file_url
+
         product.save()
+
         return JsonResponse({'message': 'Product updated successfully'})
     else:
         return JsonResponse({'error': 'Only PUT requests are allowed'})

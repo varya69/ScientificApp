@@ -4,7 +4,7 @@ from .models import Product, User, Seller
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('UserId', 'UserName', 'mobileNo')
+        fields = ('UserName', 'UserEmail', 'mobileNo', 'password')
 
 class SellerSerializer(serializers.ModelSerializer):
     class Meta:

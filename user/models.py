@@ -18,7 +18,9 @@ class User(models.Model):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
     UserId = models.AutoField(primary_key= True)
     UserName = models.CharField(max_length=100) 
+    UserEmail = models.EmailField(default='example@example.com') 
     mobileNo = models.CharField(max_length=20) 
+    password = models.CharField(max_length=100, default='user') 
     # mobileNo = models.CharField(max_length=100) 
     # mobileNo = models.CharField(max_length=100) 
 
@@ -27,7 +29,7 @@ class Seller(models.Model ):
         ('seller', 'Seller'),
         ('user', 'User'),
     )
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='user')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='seller')
     SellerId = models.AutoField(primary_key= True)
     SellerName = models.CharField(max_length=100) 
     SellerEmail = models.EmailField(default='example@example.com') 

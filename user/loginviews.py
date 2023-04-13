@@ -26,7 +26,7 @@ from user.serializers import CustomTokenObtainPairSerializer, ProductSerializer
 
 
 @csrf_exempt
-def login(request):
+def sellerLogin(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         print("data\n")
@@ -36,6 +36,23 @@ def login(request):
             # create a session to keep the user logged in
             # request.session['seller_id'] = seller.id
             return JsonResponse({'message': 'Login successful', 'SellerName': seller.SellerName, 'SellerId': seller.SellerId})
+        else:
+            return JsonResponse({'error': 'Invalid login credentials'})
+    else:
+        return JsonResponse({'error': 'Only POST requests are allowed'})
+
+@csrf_exempt
+def userLogin(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print("data\n")
+        print(data)
+        user = User.objects.filter(UserEmail=data['UserEmail'], password=data['password']).first()
+        print("\nuser:", user)
+        if user is not None:
+            # create a session to keep the user logged in
+            # request.session['seller_id'] = seller.id
+            return JsonResponse({'message': 'Login successful', 'UserName': user.UserName, 'UserId': user.UserId})
         else:
             return JsonResponse({'error': 'Invalid login credentials'})
     else:
@@ -64,28 +81,53 @@ def search(request):
 
         return JsonResponse({ 'results': results })
 
-# def search(self, request):
-#         if request.method == 'GET':
-#             queryset = Product.objects.all()
-#             serializer_class = ProductSerializer
-#             filter_backends = [filters.SearchFilter]
-#             search_fields = ['name', 'description', 'category']
-#             return Response(filter_backends.data)
-#         else:
-#              pass
+@csrf_exempt
+def create_user(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user = User(
+            UserName=data['UserName'],
+            UserEmail=data['UserEmail'],
+            mobileNo=data['mobileNo'],
+            password=data['password'],
+        )
+        user.save()
+        return JsonResponse({'message': 'User created successfully', 'UserName': user.UserName, 'UserId': user.UserId})
+    else:
+        return JsonResponse({'error': 'Only POST requests are allowed'})
+    
+@csrf_exempt
+def get_users(request):
+    if request.method == 'GET':
+        users = User.objects.all()
+        users_list = []
+        for user in users:
+            user_dict = {
+                'UserId': user.UserId,
+                'UserName': user.UserName,
+                'UserEmail': user.UserEmail,
+                'mobileNo': user.mobileNo,
+                'password': user.password,
+            }
+            users_list.append(user_dict)
+        return JsonResponse(users_list, safe=False)
+    else:
+        return JsonResponse({'error': 'Only GET requests are allowed'})
 
-# from rest_framework import status
-# from rest_framework.response import Response
-# from rest_framework.views import APIView
-# from django.contrib.auth import authenticate, login
+@csrf_exempt
+def update_user(request, user_id):
+    try:
+        user = User.objects.get(UserId=user_id)
+    except User.DoesNotExist:
+        raise Http404("User does not exist")
 
-# class LoginView(APIView):
-#     def login(self, request, format=None):
-#         username = request.data.get('username')
-#         password = request.data.get('password')
-#         user = authenticate(request, username=username, password=password)
-#         if user is not None:
-#             login(request, user)
-#             return Response({'detail': 'Authentication successful.'})
-#         else:
-#             return Response({'detail': 'Invalid credentials.'}, status=status.HTTP_401_UNAUTHORIZED)
+    if request.method == 'PUT':
+        data = json.loads(request.body)
+        user.UserName = data.get('SellerName', user.UserName)
+        user.UserEmail = data.get('SellerEmail', user.UserEmail)
+        user.mobileNo = data.get('mobileNo', user.mobileNo)
+        user.password = data.get('password', user.password)
+        user.save()
+        return JsonResponse({'message': 'User updated successfully'})
+    else:
+        return JsonResponse({'error': 'Only PUT requests are allowed'})
