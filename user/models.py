@@ -50,6 +50,7 @@ class Product(models.Model):
     Price = models.DecimalField(max_digits=10, decimal_places=2)
     # image = models.CharField(max_length=255)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
+    quantity = models.IntegerField(max_digits=10)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, default=1)
 
     def __str__(self):

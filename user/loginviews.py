@@ -75,6 +75,7 @@ def search(request):
                 "Description": product.Description,
                 "Category": product.Category,
                 "Price": product.Price,
+                "quantity": product.quantity,
                 "image": product.image.url if product.image else None
                 }
             results.append(result)

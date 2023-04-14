@@ -181,6 +181,7 @@ def add_product(request, id):
                     Description=form.cleaned_data['Description'],
                     Category=form.cleaned_data['Category'],
                     Price=form.cleaned_data['Price'],
+                    quantity=form.cleaned_data['quantity'],
                     image=uploaded_file_url,
                     seller=seller,
                 )
@@ -209,6 +210,7 @@ def product_list(request, id):
                 "Description": product.Description,
                 "Category": product.Category,
                 "Price": product.Price,
+                "quantity": product.quantity,
                 "image": product.image.url if product.image else None
             }
             product_list.append(product_dict)
@@ -241,6 +243,7 @@ def get_product(request, id):
                 "Description": product.Description,
                 "Category": product.Category,
                 "Price": product.Price,
+                "quantity": product.quantity,
                 "image": product.image.url if product.image else None
             }
             return JsonResponse(product_details, status=200, safe=False)
@@ -275,6 +278,7 @@ def update_product(request, id):
         product.Description = data.get('Description', product.Description)
         product.Category = data.get('Category', product.Category)
         product.Price = data.get('Price', product.Price)
+        product.quantity = data.get('quantity', product.quantity)
 
         # if 'image' in request.FILES:
         #     print("\n\n\n\n\n\n")
@@ -318,6 +322,7 @@ def all_products(request):
                 "Description": product.Description,
                 "Category": product.Category,
                 "Price": product.Price,
+                "quantity": product.quantity,
                 "image": product.image.url if product.image else None
             }
             product_list.append(product_dict)

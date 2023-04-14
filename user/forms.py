@@ -17,4 +17,4 @@ class UploadImageForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['ProductName', 'Description', 'Category', 'Price', 'image']
+        fields = ['ProductName', 'Description', 'Category', 'Price', 'image', 'quantity']
