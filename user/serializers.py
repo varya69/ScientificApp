@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, User, Seller
+from .models import Cart, Product, User, Seller
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,11 +27,20 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-
+    
     def __str__(self):
         return self.name
     
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'category', 'price', 'image', 'quantity']
+        fields = ['id', 'name', 'description', 'category', 'price', 'image', 'quantity', 'productId']
+
+class CartSerializer(serializers.ModelSerializer):
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        model = Cart
+        fields = ['id', 'name', 'description', 'category', 'price', 'image', 'quantity', 'userId']
 

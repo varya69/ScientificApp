@@ -52,9 +52,23 @@ class Product(models.Model):
     image = models.ImageField(upload_to='products/', null=True, blank=True)
     quantity = models.IntegerField(default=1)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, default=1)
+    productId = models.IntegerField(default=1)
 
     def __str__(self):
         return self.name
+class Cart(models.Model):
+    ProductName = models.CharField(max_length=255)
+    Description = models.TextField()
+    Category = models.CharField(max_length=255)
+    Price = models.DecimalField(max_digits=10, decimal_places=2)
+    # image = models.CharField(max_length=255)
+    image = models.TextField()
+    quantity = models.IntegerField(default=1)
+    productId = models.IntegerField(default=1)
+    user_id = models.IntegerField(default=1)
+
+    # def __str__(self):
+    #     return self.name
 
 # class Product(models.Model):
 #     name = models.CharField(max_length=100)

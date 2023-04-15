@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 import chardet
 
 import json
-from user.models import Product, User, Seller
+from user.models import Cart, Product, User, Seller
 from user.serializers import UserSerializer, SellerSerializer, ProductSerializer
 
 # Api methods for the user and seller models
@@ -184,6 +184,8 @@ def add_product(request, id):
                     quantity=form.cleaned_data['quantity'],
                     image=uploaded_file_url,
                     seller=seller,
+                    productId=form.cleaned_data['productId'],
+
                 )
                 product.save()
                 return JsonResponse({'success': True, 'message': 'Product added successfully'})
@@ -211,7 +213,8 @@ def product_list(request, id):
                 "Category": product.Category,
                 "Price": product.Price,
                 "quantity": product.quantity,
-                "image": product.image.url if product.image else None
+                "image": product.image.url if product.image else None,
+                "productId": product.productId,
             }
             product_list.append(product_dict)
         return JsonResponse(product_list, safe=False)
@@ -244,7 +247,9 @@ def get_product(request, id):
                 "Category": product.Category,
                 "Price": product.Price,
                 "quantity": product.quantity,
-                "image": product.image.url if product.image else None
+                "image": product.image.url if product.image else None,
+                "productId": product.productId,
+
             }
             return JsonResponse(product_details, status=200, safe=False)
     except Product.DoesNotExist:
@@ -279,6 +284,7 @@ def update_product(request, id):
         product.Category = data.get('Category', product.Category)
         product.Price = data.get('Price', product.Price)
         product.quantity = data.get('quantity', product.quantity)
+        product.productId = data.get('productId', product.productId)
 
         # if 'image' in request.FILES:
         #     print("\n\n\n\n\n\n")
@@ -323,7 +329,8 @@ def all_products(request):
                 "Category": product.Category,
                 "Price": product.Price,
                 "quantity": product.quantity,
-                "image": product.image.url if product.image else None
+                "image": product.image.url if product.image else None,
+                "productId": product.productId,
             }
             product_list.append(product_dict)
         return JsonResponse(product_list, safe=False)

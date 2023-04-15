@@ -21,6 +21,9 @@ urlpatterns = [
     path('update_product/<int:id>', views.update_product, name='update_product'),
     path('all-products/', views.all_products, name='all_products'),
     path('products/', loginviews.search, name='search'),
+    path('cart/', loginviews.addProductToCart, name='cart'),
+    path('get_cart/<int:user_id>', loginviews.get_cartList, name='get_cart'),
+    path('delete-cart/<int:cartId>', loginviews.delete_cart, name='delete-cart'),
     # path('', views.userApi, name='user'),
     # path('seller/([0-9]+)$', views.seller_api),
 ]
